@@ -34,19 +34,19 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
   const addProduct = async (productId: number) => {
     try {
-      const updatedCart = [...cart];
-      const productExists = updatedCart.find(product => product.id === productId);
-      const stock = await api.get(`/stock/${productId}`);
-      const stockAmount = stock.data.amount;
-      const currentAmount = productExists ? productExists.amount : 0;
-      const amount = currentAmount + 1;
+      const updatedCart = [...cart];                                                // Variável que vamos manusear
+      const productExists = updatedCart.find(product => product.id === productId);  // Checar se o produto existe :)
+      const stock = await api.get(`/stock/${productId}`);                           // Contem os dados de estoque da API
+      const stockAmount = stock.data.amount;                                        // Contem os dados de QT
+      const currentAmount = productExists ? productExists.amount : 0;               // Checa se existe produto no carrinho
+      const amount = currentAmount + 1;                      //QT desejada  // Adiciona QT ao carrinho
 
-      if (amount >stockAmount){
+      if (amount >stockAmount){               //Se a QT desejada ultrapassar a total do estoque, exibe msg de erro !
         toast.error('Quantidade solicitada fora de estoque');
         return;
       }
 
-      if (productExists){
+      if (productExists){                     // Se existe, adiciona QT, se não existe, adiciona Item novo com QT 1
         productExists.amount = amount;
       } else {
         const product = await api.get(`/products/${productId}`);
@@ -55,33 +55,65 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
         ...product.data,
         amount:1
       }
-      updatedCart.push(newProduct);
+      updatedCart.push(newProduct);           // Poe na variável declarada acima, updatedCart, o NewProduct
       }
 
-      setCart(updatedCart);
+      setCart(updatedCart);                      // E só aqui a gente usa o Set pra dar updade no 'Cart'
 
-      localStorage.setItem('@RocketShoes:cart',JSON.stringify(cart));
+      localStorage.setItem('@RocketShoes:cart',JSON.stringify(cart));         //Depois enfia essa porra no localstorage
     } catch {
       toast.error('Erro na adição do produto');
     }
-  };
+  };  // DONE !
 
   const removeProduct = (productId: number) => {
     try {
-      // TODO
+      const updatedCart = [...cart];
+      const productIndex = updatedCart.findIndex(product => product.id === productId);
+
+      if(productIndex >=0){
+        updatedCart.splice(productIndex, 1);
+        setCart(updatedCart);
+        localStorage.setItem('@RocketShoes:cart',JSON.stringify(updatedCart));
+      } else {
+        throw Error();
+      }
     } catch {
-      // TODO
+      toast.error('Erro na remoção do produto')
     }
-  };
+  };  // DONE !
 
   const updateProductAmount = async ({
     productId,
     amount,
   }: UpdateProductAmount) => {
     try {
-      // TODO
+      if (amount >= 0){
+        return;
+      }
+
+      const stock = await api.get(`/stock/${productId}`);
+
+      const stockAmount = stock.data.amount;
+
+      if (amount > stockAmount){
+        toast.error('Quantidade solicitada fora de estoque');
+        return;
+      }
+
+      const updatedCart = [...cart];
+      const productExists = updatedCart.find(product => product.id === productId);
+
+      if(productExists){
+        productExists.amount = amount;
+        setCart(updatedCart);
+        localStorage.setItem('@RocketShoes:cart',JSON.stringify(updatedCart));
+
+      }else{
+        throw Error();
+      }
     } catch {
-      // TODO
+      toast.error('Erro na alteração de quantidade do produto');
     }
   };
 
