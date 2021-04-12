@@ -60,7 +60,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
       setCart(updatedCart);                      // E só aqui a gente usa o Set pra dar updade no 'Cart'
 
-      localStorage.setItem('@RocketShoes:cart',JSON.stringify(cart));         //Depois enfia essa porra no localstorage
+      localStorage.setItem('@RocketShoes:cart',JSON.stringify(updatedCart));         //Depois enfia essa porra no localstorage
     } catch {
       toast.error('Erro na adição do produto');
     }
