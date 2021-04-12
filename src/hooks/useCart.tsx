@@ -83,10 +83,8 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     }
   };  // DONE !
 
-  const updateProductAmount = async ({
-    productId,
-    amount,
-  }: UpdateProductAmount) => {
+  const updateProductAmount = async ({ productId, amount, }: UpdateProductAmount) => {
+
     try {
       if (amount >= 0){
         return;
@@ -115,7 +113,8 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     } catch {
       toast.error('Erro na alteração de quantidade do produto');
     }
-  };
+  
+  };  // DONE !
 
   return (
     <CartContext.Provider
